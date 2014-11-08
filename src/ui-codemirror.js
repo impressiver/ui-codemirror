@@ -85,9 +85,13 @@ angular.module('ui.codemirror', [])
               var newValue = instance.getValue();
               if (newValue !== ngModel.$viewValue) {
                 // Changes to the model from a callback need to be wrapped in $apply or angular will not notice them
-                scope.$apply(function() {
-                  ngModel.$setViewValue(newValue);
-                });
+                var fn = function() {
+                  scope.$apply(function() {
+                    ngModel.$setViewValue(newValue);
+                  });
+                };
+                // and it needs to be wrapped in a setTimeout to guarantee $apply happens outside an in-progress $digest
+                setTimeout(fn, 0);
               }
             });
           }
