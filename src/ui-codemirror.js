@@ -97,8 +97,11 @@ angular.module('ui.codemirror', [])
           if (iAttrs.uiRefresh) {
             scope.$watch(iAttrs.uiRefresh, function (newVal, oldVal) {
               // Skip the initial watch firing
-              if (newVal !== oldVal) {
-                codeMirror.refresh();
+              if (angular.isDefined(newVal) && newVal !== oldVal) {
+                // Add refresh to the end of the event stack, which guarantees
+                // the 'change' handler is triggered from outside the current
+                // $digest phase.
+                setTimeout(codeMirror.refresh, 0);
               }
             });
           }
